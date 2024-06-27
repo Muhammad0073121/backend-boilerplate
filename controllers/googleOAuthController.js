@@ -1,4 +1,4 @@
-const { gOAuth } = require("../models/googleOAuth");
+const { googleOAuthUser } = require("../models/googleOAuth");
 const { google } = require("googleapis");
 
 const SCOPES = [
@@ -31,9 +31,9 @@ const callback = async (req, res) => {
     const { data } = await oauth2.userinfo.get();
     const userEmail = data.email;
     // Store tokens and email in the database
-    let user = await gOAuth.findOne({ email: userEmail });
+    let user = await googleOAuthUser.findOne({ email: userEmail });
     if (!user) {
-      user = new gOAuth({ email: userEmail, token: tokens });
+      user = new googleOAuthUser({ email: userEmail, token: tokens });
     } else {
       user.googleToken = tokens;
     }

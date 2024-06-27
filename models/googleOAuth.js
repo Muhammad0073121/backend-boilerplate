@@ -17,7 +17,7 @@ const gOAuthSchema = new mongoose.Schema(
   }
 );
 
-const gOAuth = mongoose.model("gOAuth", gOAuthSchema);
+const googleOAuthUser = mongoose.model("googleOAuthUser", gOAuthSchema);
 
-module.exports.gOAuth = gOAuth;
+module.exports.googleOAuthUser = googleOAuthUser;
 module.exports.gOAuthSchema = gOAuthSchema;
