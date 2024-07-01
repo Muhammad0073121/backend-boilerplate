@@ -9,12 +9,13 @@ const SCOPES = [
 
 const auth = async (req, res) => {
   try {
+    const query = req.query;
     const authUrl = global.oAuth2Client.generateAuthUrl({
       access_type: "offline",
       scope: SCOPES,
       prompt: "consent",
     });
-    res.redirect(authUrl);
+    res.redirect(authUrl + "&&state=" + query.userId);
   } catch (error) {
     console.log(error);
     return res.status(400).send("Server Error");
@@ -23,6 +24,7 @@ const auth = async (req, res) => {
 
 const callback = async (req, res) => {
   try {
+    const userId = req.query.state;
     const code = req.query.code; // Authorization code from Google
     const { tokens } = await global.oAuth2Client.getToken(code); // Exchange code for tokens
     global.oAuth2Client.setCredentials(tokens);
@@ -31,9 +33,13 @@ const callback = async (req, res) => {
     const { data } = await oauth2.userinfo.get();
     const userEmail = data.email;
     // Store tokens and email in the database
-    let user = await googleOAuthUser.findOne({ email: userEmail });
+    let user = await googleOAuthUser.findById(userId);
     if (!user) {
-      user = new googleOAuthUser({ email: userEmail, token: tokens });
+      user = new googleOAuthUser({
+        user: userId,
+        email: userEmail,
+        token: tokens,
+      });
     } else {
       user.googleToken = tokens;
     }

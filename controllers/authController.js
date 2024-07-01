@@ -13,8 +13,6 @@ const login = async (req, res) => {
     const formData = req.body;
     const user = await User.findOne({ email: formData.email });
     if (!user) return res.status(400).send("User Doesn't Exists");
-    if (!user.status)
-      return res.status(400).send("Account Deactivated by Admin");
     let validPassword = await bcrypt.compare(formData.password, user.password);
     if (!validPassword) return res.status(400).send("Invalid Credentials");
     await user.removeAuthToken(user._id);
